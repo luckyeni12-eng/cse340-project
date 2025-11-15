@@ -1,34 +1,33 @@
--- ======================================
--- File: assignment2.sql
+-- Assignment 2 - Task One
 -- Purpose: CRUD and JOIN practice for CSE Motors database
--- ======================================
 
--- 1 Insert Tony Stark record
-INSERT INTO account (first_name, last_name, email, password)
+-- Query 1: Insert Tony Stark account
+INSERT INTO account (account_firstname, account_lastname, account_email, account_password)
 VALUES ('Tony', 'Stark', 'tony@starkent.com', 'Iam1ronM@n');
 
--- 2 Update Tony Stark account_type to 'Admin'
+-- Query 2: Update Tony Stark to Admin
 UPDATE account
 SET account_type = 'Admin'
-WHERE email = 'tony@starkent.com';
+WHERE account_email = 'tony@starkent.com';
 
--- 3 Delete Tony Stark record
+-- Query 3: Delete Tony Stark record
 DELETE FROM account
-WHERE email = 'tony@starkent.com';
+WHERE account_email = 'tony@starkent.com';
 
--- 4 Modify GM Hummer description to replace “small interiors” with “a huge interior”
+-- Query 4: Replace “small interiors” with “a huge interior”
 UPDATE inventory
 SET inv_description = REPLACE(inv_description, 'small interiors', 'a huge interior')
 WHERE inv_make = 'GM' AND inv_model = 'Hummer';
 
--- 5 Select make, model, and classification name for inventory in the 'Sport' category
+-- Query 5: INNER JOIN inventory + classification to get Sport classification cars
 SELECT inv_make, inv_model, classification_name
 FROM inventory
 INNER JOIN classification
-  ON inventory.classification_id = classification.classification_id
+    ON inventory.classification_id = classification.classification_id
 WHERE classification_name = 'Sport';
 
--- 6 Update all inventory image paths to add '/vehicles' between '/images' and file name
+-- Query 6: Add /vehicles/ to all image file paths
 UPDATE inventory
-SET inv_image = REPLACE(inv_image, '/images/', '/images/vehicles/'),
+SET 
+    inv_image = REPLACE(inv_image, '/images/', '/images/vehicles/'),
     inv_thumbnail = REPLACE(inv_thumbnail, '/images/', '/images/vehicles/');
