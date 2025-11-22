@@ -1,0 +1,27 @@
+<!-- views/errors/error.ejs -->
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title><%= title %> | CSE Motors</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="stylesheet" href="/css/detail.css" />
+</head>
+<body>
+  <main class="container error-page" role="main" aria-labelledby="error-heading">
+    <h1 id="error-heading"><%= status %> - <%= title %></h1>
+    <p class="error-message"><%= message %></p>
+
+    <div class="error-actions">
+      <a href="/" class="btn">Home</a>
+      <a href="/inventory/classification/1" class="btn">Browse Cars</a>
+    </div>
+
+    <p class="accessibility-note">If you believe this is an error, contact site support.</p>
+  </main>
+
+  <footer>
+    <%- include('../partials/footer') %>
+  </footer>
+</body>
+</html>

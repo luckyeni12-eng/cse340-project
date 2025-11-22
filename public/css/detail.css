@@ -1,0 +1,79 @@
+/* public/css/detail.css */
+/* Simple responsive layout for the detail view.
+   Meets frontend checklist: responsive, accessible, no horizontal scroll. */
+
+:root{
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  color: #222;
+  line-height: 1.4;
+}
+
+* { box-sizing: border-box; }
+
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.site-header, .site-footer {
+  padding: 0.75rem 1rem;
+  background: #f8f8f8;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.main-nav a, .site-footer a { text-decoration: none; color: #004080; }
+
+.page-heading { font-size: 1.5rem; margin-top: 0.5rem; }
+
+.detail-layout {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 1rem;
+  align-items: flex-start;
+}
+
+/* Image column */
+.detail-image {
+  flex: 1 1 420px;
+  min-width: 260px;
+  max-width: 540px;
+}
+.detail-image img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+}
+
+/* Content column */
+.detail-content {
+  flex: 1 1 420px;
+  min-width: 260px;
+}
+.headline { font-size: 1.25rem; margin: 0; }
+.price { font-size: 1.4rem; font-weight: 700; color: #0a6; margin: 0.5rem 0; }
+.mileage { color: #444; margin-bottom: 1rem; }
+
+.description p { margin-top: 0.25rem; }
+
+/* specs list */
+.specs { margin-top: 1rem; display: grid; grid-template-columns: 120px 1fr; gap: 0.25rem 1rem; }
+.specs dt { font-weight: 700; }
+.specs dd { margin: 0; }
+
+/* Utility-rendered HTML block (below) */
+.utility-html { margin-top: 2rem; background:#fff; padding:1rem; border:1px solid #eee; border-radius:6px; }
+
+/* error page specifics */
+.error-page { padding: 2rem; text-align: left; }
+.error-page .error-message { margin-top: 0.5rem; color: #333; }
+.error-actions .btn { display:inline-block; margin-right: .5rem; padding: .5rem .75rem; border-radius: 6px; background: #0077cc; color: #fff; text-decoration: none; }
+
+@media (max-width: 768px) {
+  .detail-layout { flex-direction: column; }
+  .detail-image, .detail-content { max-width: 100%; }
+  .page-heading { font-size: 1.25rem; }
+}
