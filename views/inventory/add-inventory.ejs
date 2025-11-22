@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title><%= title %></title>
+</head>
+<body>
+  <h1>Add Inventory</h1>
+
+  <% if (errors && errors.length > 0) { %>
+    <ul>
+      <% errors.forEach(error => { %>
+        <li><%= error.msg %></li>
+      <% }) %>
+    </ul>
+  <% } %>
+
+  <% if (message.length > 0) { %>
+    <div class="flash-message"><%= message %></div>
+  <% } %>
+
+  <form action="/inv/add-inventory" method="POST">
+    <label for="classificationList">Classification</label>
+    <%= classificationList %>
+
+    <label for="inv_make">Make</label>
+    <input type="text" name="inv_make" id="invMake" value="<%= sticky.inv_make || '' %>" required>
+
+    <label for="inv_model">Model</label>
+    <input type="text" name="inv_model" id="invModel" value="<%= sticky.inv_model || '' %>" required>
+
+    <label for="inv_year">Year</label>
+    <input type="number" name="inv_year" id="invYear" value="<%= sticky.inv_year || '' %>" required min="1900" max="2100">
+
+    <label for="inv_price">Price</label>
+    <input type="number" step="0.01" name="inv_price" id="invPrice" value="<%= sticky.inv_price || '' %>" required>
+
+    <label for="inv_image">Image Path</label>
+    <input type="text" name="inv_image" id="invImage" value="<%= sticky.inv_image || '/images/no-image.png' %>">
+
+    <label for="inv_thumbnail">Thumbnail Path</label>
+    <input type="text" name="inv_thumbnail" id="invThumbnail" value="<%= sticky.inv_thumbnail || '/images/no-image.png' %>">
+
+    <button type="submit">Add Inventory</button>
+  </form>
+</body>
+</html>
