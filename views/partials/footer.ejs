@@ -1,52 +1,13 @@
-<% 
-  const d = new Date();
-  const year = d.getFullYear(); 
-%>
-
-<footer>
-  <div class="footer-content">
-    <p class="copyrights">
-      &copy; <%= year %> CSE 340 App
-    </p>
-    <p class="error-link">
-      <!-- Link to trigger intentional 500 error for Task 3 -->
-      <a href="/errors/trigger" class="error-trigger-link">Trigger 500 Error</a>
-    </p>
-  </div>
+<footer class="site-footer" role="contentinfo">
+<div class="container footer-inner">
+<p>&copy; <%= new Date().getFullYear() %> CSE Motors. All rights reserved.</p>
+<nav aria-label="Footer">
+<ul class="footer-links">
+<li><a href="/privacy">Privacy</a></li>
+<li><a href="/terms">Terms</a></li>
+</ul>
+</nav>
+</div>
 </footer>
-
-<style>
-  footer {
-    background-color: #f8f8f8;
-    padding: 1rem;
-    text-align: center;
-    border-top: 1px solid #e4e4e4;
-    margin-top: 2rem;
-  }
-
-  .footer-content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.5rem;
-  }
-
-  .error-trigger-link {
-    color: #d9534f;
-    text-decoration: none;
-    font-weight: bold;
-  }
-
-  .error-trigger-link:hover {
-    text-decoration: underline;
-  }
-
-  @media (min-width: 768px) {
-    .footer-content {
-      flex-direction: row;
-      justify-content: space-between;
-      width: 80%;
-      margin: 0 auto;
-    }
-  }
-</style>
+</body>
+</html>
