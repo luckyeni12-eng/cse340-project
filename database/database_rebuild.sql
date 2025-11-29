@@ -1,75 +1,117 @@
--- ======================================
--- File: database_rebuild.sql
--- Purpose: Rebuild the CSE Motors database
--- ======================================
+-- rebuild_db.sql
+-- Full rebuild file for assignment task two
+-- Drops objects if they exist, then creates the type, tables, and inserts seed data.
+-- At the end are the two queries copied from Task 1 (queries 4 and 6), as required.
 
--- Drop existing tables if they exist
+-- ---------------------------------------------------------
+-- 0) Optional: drop existing tables/type if present (safe when rebuilding)
+-- ---------------------------------------------------------
 DROP TABLE IF EXISTS inventory CASCADE;
 DROP TABLE IF EXISTS classification CASCADE;
 DROP TABLE IF EXISTS account CASCADE;
-DROP TYPE IF EXISTS account_type_enum;
+DROP TYPE IF EXISTS full_name CASCADE;
 
--- 1 Create ENUM type for account_type
-CREATE TYPE account_type_enum AS ENUM ('Admin', 'Client');
-
--- 2 Create account table
-CREATE TABLE account (
-    account_id SERIAL PRIMARY KEY,
-    first_name VARCHAR(50) NOT NULL,
-    last_name VARCHAR(50) NOT NULL,
-    email VARCHAR(100) UNIQUE NOT NULL,
-    password VARCHAR(255) NOT NULL,
-    account_type account_type_enum DEFAULT 'Client' NOT NULL
+-- ---------------------------------------------------------
+-- 1) Create a PostgreSQL composite type (example)
+-- ---------------------------------------------------------
+-- This demonstrates creation of a custom type. It's not strictly required by other tables
+-- but meets the assignment requirement to create a PostgreSQL type.
+CREATE TYPE full_name AS (
+  first_name text,
+  last_name  text
 );
 
--- 3 Create classification table
+-- ---------------------------------------------------------
+-- 2) Create the classification table
+-- ---------------------------------------------------------
 CREATE TABLE classification (
-    classification_id SERIAL PRIMARY KEY,
-    classification_name VARCHAR(50) UNIQUE NOT NULL
+  classification_id SERIAL PRIMARY KEY,
+  classification_name TEXT NOT NULL UNIQUE
 );
 
--- 4 Create inventory table
+-- ---------------------------------------------------------
+-- 3) Create the inventory table
+-- ---------------------------------------------------------
 CREATE TABLE inventory (
-    inv_id SERIAL PRIMARY KEY,
-    inv_make VARCHAR(50) NOT NULL,
-    inv_model VARCHAR(50) NOT NULL,
-    inv_year INT NOT NULL,
-    inv_description TEXT,
-    inv_image VARCHAR(255),
-    inv_thumbnail VARCHAR(255),
-    inv_price NUMERIC(10,2),
-    inv_miles INT,
-    inv_color VARCHAR(50),
-    classification_id INT REFERENCES classification(classification_id)
+  inv_id SERIAL PRIMARY KEY,
+  inv_make TEXT NOT NULL,
+  inv_model TEXT NOT NULL,
+  inv_description TEXT,
+  inv_image TEXT,
+  inv_thumbnail TEXT,
+  classification_id INTEGER REFERENCES classification(classification_id)
 );
 
--- 5 Populate classification table
-INSERT INTO classification (classification_name)
-VALUES 
-('SUV'),
-('Sport'),
-('Sedan'),
-('Truck'),
-('Luxury');
+-- ---------------------------------------------------------
+-- 4) Create the account table
+-- ---------------------------------------------------------
+-- Using separate firstname/lastname columns because the course examples expect them.
+CREATE TABLE account (
+  account_id SERIAL PRIMARY KEY,
+  account_firstname TEXT NOT NULL,
+  account_lastname  TEXT NOT NULL,
+  account_email TEXT UNIQUE NOT NULL,
+  account_password TEXT NOT NULL,
+  account_type TEXT NOT NULL DEFAULT 'Client'
+);
 
--- 6 Populate inventory table
-INSERT INTO inventory (inv_make, inv_model, inv_year, inv_description, inv_image, inv_thumbnail, inv_price, inv_miles, inv_color, classification_id)
+-- ---------------------------------------------------------
+-- 5) Insert seed data into classification
+-- ---------------------------------------------------------
+INSERT INTO classification (classification_name) VALUES
+  ('Sport'),
+  ('Truck'),
+  ('SUV'),
+  ('Sedan');
+
+-- ---------------------------------------------------------
+-- 6) Insert seed data into inventory
+--    We include:
+--      - Two Sport items (so Task 1 query #5 returns two rows)
+--      - A GM Hummer item with description containing 'small interiors' so we can run the replace() update
+--    The image paths intentionally start with '/images/' so the "add /vehicles" query will modify them.
+-- ---------------------------------------------------------
+INSERT INTO inventory (inv_make, inv_model, inv_description, inv_image, inv_thumbnail, classification_id)
 VALUES
-('GM', 'Hummer', 2020, 'A rugged off-road SUV with small interiors.', '/images/hummer.jpg', '/images/hummer-thumb.jpg', 55000, 12000, 'Black', 1),
-('Ford', 'Mustang', 2021, 'A fast and stylish sport coupe.', '/images/mustang.jpg', '/images/mustang-thumb.jpg', 48000, 8000, 'Red', 2),
-('Tesla', 'Model S', 2022, 'A premium electric sedan with advanced technology.', '/images/model-s.jpg', '/images/model-s-thumb.jpg', 79999, 5000, 'White', 3),
-('Chevrolet', 'Silverado', 2019, 'A powerful truck with excellent towing capacity.', '/images/silverado.jpg', '/images/silverado-thumb.jpg', 40000, 22000, 'Blue', 4),
-('BMW', 'X5', 2023, 'Luxury SUV with exceptional performance.', '/images/x5.jpg', '/images/x5-thumb.jpg', 72000, 3000, 'Gray', 5),
-('Porsche', '911', 2023, 'Iconic sport car with incredible handling.', '/images/911.jpg', '/images/911-thumb.jpg', 110000, 1000, 'Yellow', 2);
+  -- Sport cars (2 records)
+  ('Toyota', 'Supra', 'A fast sport car with tuned suspension and leather seats', '/images/toyota-supra.jpg', '/images/thumbs/toyota-supra-thumb.jpg', (SELECT classification_id FROM classification WHERE classification_name = 'Sport' LIMIT 1)),
+  ('Nissan', '370Z', 'Sporty coupe, great handling and sharp looks', '/images/nissan-370z.jpg', '/images/thumbs/nissan-370z-thumb.jpg', (SELECT classification_id FROM classification WHERE classification_name = 'Sport' LIMIT 1)),
 
---  At the end, include copies of queries #4 and #6 from assignment2.sql
+  -- GM Hummer (the one we will update using replace to change 'small interiors' to 'a huge interior')
+  ('GM', 'Hummer', 'Classic off-roader with small interiors and heavy-duty suspension', '/images/gm-hummer.jpg', '/images/thumbs/gm-hummer-thumb.jpg', (SELECT classification_id FROM classification WHERE classification_name = 'Truck' LIMIT 1)),
 
--- (From Task One - Query 4)
+  -- Another entries for realism
+  ('Ford', 'F-150', 'Reliable pickup truck for work and play', '/images/ford-f150.jpg', '/images/thumbs/ford-f150-thumb.jpg', (SELECT classification_id FROM classification WHERE classification_name = 'Truck' LIMIT 1)),
+  ('Honda', 'Civic', 'Compact sedan with good fuel economy', '/images/honda-civic.jpg', '/images/thumbs/honda-civic-thumb.jpg', (SELECT classification_id FROM classification WHERE classification_name = 'Sedan' LIMIT 1));
+
+-- ---------------------------------------------------------
+-- 7) Optionally insert a couple of account rows for testing (not required by Task 1)
+-- ---------------------------------------------------------
+INSERT INTO account (account_firstname, account_lastname, account_email, account_password, account_type)
+VALUES
+  ('Bruce', 'Banner', 'bruce@avengers.com', 'hulkSmash123', 'Client'),
+  ('Natasha', 'Romanoff', 'nat@shield.org', 'blackWidow!', 'Client');
+
+-- ---------------------------------------------------------
+-- 8) Ensure indexes (optional) - classification_name is unique and indexed by the UNIQUE constraint.
+-- ---------------------------------------------------------
+
+-- ---------------------------------------------------------
+-- 9) Finally: copy queries 4 and 6 from Task One and place them at the end (they should run last)
+--    Query 4: replace 'small interiors' -> 'a huge interior' in the GM Hummer record
+-- ---------------------------------------------------------
 UPDATE inventory
-SET inv_description = REPLACE(inv_description, 'small interiors', 'a huge interior')
-WHERE inv_make = 'GM' AND inv_model = 'Hummer';
+SET inv_description = replace(inv_description, 'small interiors', 'a huge interior')
+WHERE inv_id = (
+  SELECT inv_id FROM inventory WHERE inv_make = 'GM' AND inv_model = 'Hummer' LIMIT 1
+);
 
--- (From Task One - Query 6)
+-- ---------------------------------------------------------
+-- 10) Query 6 from Task 1: update all inv_image and inv_thumbnail paths to include '/vehicles'
+-- ---------------------------------------------------------
 UPDATE inventory
-SET inv_image = REPLACE(inv_image, '/images/', '/images/vehicles/'),
-    inv_thumbnail = REPLACE(inv_thumbnail, '/images/', '/images/vehicles/');
+SET
+  inv_image = replace(inv_image, '/images/', '/images/vehicles/'),
+  inv_thumbnail = replace(inv_thumbnail, '/images/', '/images/vehicles/');
+
+-- End of rebuild_db.sql

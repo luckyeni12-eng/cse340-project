@@ -1,43 +1,49 @@
-/* ******************************************
- * This server.js file is the primary file of the 
- * application. It is used to control the project.
- *******************************************/
+/********************************************
+ * Primary server file for the CSE Motors app
+ ********************************************/
 
 /* ***********************
  * Require Statements
  *************************/
 const express = require("express")
 const expressLayouts = require("express-ejs-layouts")
-const env = require("dotenv").config()
+require("dotenv").config()
 const app = express()
+
+// Static routes
 const static = require("./routes/static")
 
-// ADD THESE TWO LINES
+// Session and Database
 const session = require("express-session")
 const pool = require("./database/")
 
-// ADD FLASH PACKAGE
+// Flash Messages
 const flash = require("connect-flash")
 
 /* ***********************
  * Middleware
- * ************************/
-app.use(session({
-  store: new (require('connect-pg-simple')(session))({
-    createTableIfMissing: true,
-    pool,
-  }),
-  secret: process.env.SESSION_SECRET,
-  resave: true,
-  saveUninitialized: true,
-  name: 'sessionId',
-}))
+ *************************/
 
-// >>> ADD FLASH MIDDLEWARE BELOW SESSION <<<
+// Sessions
+app.use(
+  session({
+    store: new (require("connect-pg-simple")(session))({
+      createTableIfMissing: true,
+      pool,
+    }),
+    secret: process.env.SESSION_SECRET,
+    resave: false, // better practice
+    saveUninitialized: false,
+    name: "sessionId",
+    cookie: { secure: false }, // MUST stay false in development
+  })
+)
+
+// Flash middleware
 app.use(flash())
 
-// >>> MAKE FLASH MESSAGES AVAILABLE IN ALL VIEWS <<<
-app.use(function (req, res, next) {
+// Make flash messages available in all views
+app.use((req, res, next) => {
   res.locals.messages = req.flash()
   next()
 })
@@ -47,28 +53,32 @@ app.use(function (req, res, next) {
  *************************/
 app.set("view engine", "ejs")
 app.use(expressLayouts)
-app.set("layout", "./layouts/layout") // not at views root
+app.set("layout", "./layouts/layout")
+
+/* ***********************
+ * Static Files
+ *************************/
+app.use(express.static("public"))
 
 /* ***********************
  * Routes
  *************************/
 app.use(static)
 
-// index route
-app.get("/", function (req, res) {
+// Home Route
+app.get("/", (req, res) => {
   res.render("index", { title: "Home" })
 })
 
 /* ***********************
  * Local Server Information
- * Values from .env (environment) file
  *************************/
-const port = process.env.PORT
-const host = process.env.HOST
+const port = process.env.PORT || 5500
+const host = process.env.HOST || "localhost"
 
 /* ***********************
- * Log statement to confirm server operation
+ * Confirm Server Running
  *************************/
 app.listen(port, () => {
-  console.log(`app listening on ${host}:${port}`)
+  console.log(`App listening on http://${host}:${port}`)
 })
