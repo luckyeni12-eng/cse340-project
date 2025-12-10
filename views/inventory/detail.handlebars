@@ -1,0 +1,22 @@
+{{!-- views/inventory/detail.handlebars --}}
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>{{title}}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="sitesheet" href="/css/site.css">
+</head>
+<body>
+    {{> header}}
+
+    <main class="container">
+        {{!-- Insert dynamic vehicle detail HTML --}}
+        {{{detailHTML}}}
+
+        <p><a href="/inventory">&larr; Back to all inventory</a></p>
+    </main>
+
+    {{> footer}}
+</body>
+</html>

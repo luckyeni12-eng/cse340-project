@@ -1,84 +1,80 @@
-/********************************************
- * Primary server file for the CSE Motors app
- ********************************************/
+require('dotenv').config();
+const express = require('express');
+const path = require('path');
+const fs = require('fs');
+const exphbs = require('express-handlebars');
+const indexRoutes = require('./routes/index');
+const inventoryRoutes = require('./routes/inventoryRoutes');
 
-/* ***********************
- * Require Statements
- *************************/
-const express = require("express")
-const expressLayouts = require("express-ejs-layouts")
-require("dotenv").config()
-const app = express()
+const app = express();
+const PORT = process.env.PORT || 3000;
 
-// Static routes
-const static = require("./routes/static")
+// ===========================
+// View Engine Setup
+// ===========================
+app.engine('handlebars', exphbs.engine({
+    defaultLayout: 'main',
+    layoutsDir: path.join(__dirname, 'views', 'layouts'),
+    partialsDir: path.join(__dirname, 'views', 'partials')
+}));
+app.set('view engine', 'handlebars');
+app.set('views', path.join(__dirname, 'views'));
 
-// Session and Database
-const session = require("express-session")
-const pool = require("./database/")
+// ===========================
+// Middleware
+// ===========================
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-// Flash Messages
-const flash = require("connect-flash")
+// Serve static files (images, CSS, JS, etc.)
+app.use(express.static(path.join(__dirname, 'public')));
 
-/* ***********************
- * Middleware
- *************************/
+// ===========================
+// Routes
+// ===========================
+app.use('/', indexRoutes);
 
-// Sessions
-app.use(
-  session({
-    store: new (require("connect-pg-simple")(session))({
-      createTableIfMissing: true,
-      pool,
-    }),
-    secret: process.env.SESSION_SECRET,
-    resave: false, // better practice
-    saveUninitialized: false,
-    name: "sessionId",
-    cookie: { secure: false }, // MUST stay false in development
-  })
-)
+// Inventory route that dynamically loads images
+app.get('/inventory', (req, res) => {
+    const imageFolder = path.join(__dirname, 'public/images/vehicles'); // Make sure folder name matches
+    let images = [];
 
-// Flash middleware
-app.use(flash())
+    try {
+        images = fs.readdirSync(imageFolder)
+            .filter(file => /\.(jpg|jpeg|png|gif)$/i.test(file))
+            .map(file => '/images/vehicles/' + file); // URL matches folder name
+    } catch (err) {
+        console.error('Error reading image folder:', err);
+    }
 
-// Make flash messages available in all views
-app.use((req, res, next) => {
-  res.locals.messages = req.flash()
-  next()
-})
+    res.render('inventory', { images });
+});
 
-/* ***********************
- * View Engine and Templates
- *************************/
-app.set("view engine", "ejs")
-app.use(expressLayouts)
-app.set("layout", "./layouts/layout")
+app.use('/', inventoryRoutes);
 
-/* ***********************
- * Static Files
- *************************/
-app.use(express.static("public"))
+// ===========================
+// 404 Handler
+// ===========================
+app.use((req, res) => {
+    res.status(404).render('errors/error', { message: 'Page Not Found', status: 404 });
+});
 
-/* ***********************
- * Routes
- *************************/
-app.use(static)
+// ===========================
+// Error Handler
+// ===========================
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(err.status || 500).render('errors/error', {
+        message: err.message || 'Internal Server Error',
+        status: err.status || 500
+    });
+});
 
-// Home Route
-app.get("/", (req, res) => {
-  res.render("index", { title: "Home" })
-})
+// ===========================
+// Start Server
+// ===========================
+app.listen(PORT, () => {
+    console.log(`Server running on http://localhost:${PORT}`);
+});
 
-/* ***********************
- * Local Server Information
- *************************/
-const port = process.env.PORT || 5500
-const host = process.env.HOST || "localhost"
 
-/* ***********************
- * Confirm Server Running
- *************************/
-app.listen(port, () => {
-  console.log(`App listening on http://${host}:${port}`)
-})

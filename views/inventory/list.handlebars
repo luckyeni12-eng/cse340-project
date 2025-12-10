@@ -1,0 +1,13 @@
+<h2>{{type}} Inventory</h2>
+<ul>
+  {{#each inventory}}
+    <li>
+      <h3>{{this.make}} {{this.model}} ({{this.year}})</h3>
+      <p>Price: ${{this.price}}</p>
+      <a href="/inventory/details/{{this.id}}">
+        <img src="{{this.image}}" alt="{{this.make}} {{this.model}}" width="200">
+      </a>
+    </li>
+  {{/each}}
+</ul>
+<a href="/">Back to home</a>

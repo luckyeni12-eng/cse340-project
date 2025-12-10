@@ -1,0 +1,24 @@
+<header>
+  <nav class="navbar">
+    <div class="container">
+      <a href="/" class="navbar-brand">Car Inventory</a>
+      <button class="navbar-toggler" type="button" onclick="toggleMenu()">☰</button>
+
+      <ul class="navbar-menu" id="navbarMenu">
+        <li><a href="/">Home</a></li>
+        <li><a href="/inventory/SUV">SUVs</a></li>
+        <li><a href="/inventory/Sedan">Sedans</a></li>
+        <li><a href="/inventory/Truck">Trucks</a></li>
+        <li><a href="/inventory/Coupe">Coupes</a></li>
+        <li><a href="/inventory/Van">Vans</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <script>
+    function toggleMenu() {
+      const menu = document.getElementById('navbarMenu');
+      menu.classList.toggle('active');
+    }
+  </script>
+</header>

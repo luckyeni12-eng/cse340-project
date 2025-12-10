@@ -1,0 +1,44 @@
+{{!-- views/inventory/classification.handlebars --}}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>{{title}}</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <link rel="stylesheet" href="/css/site.css">
+  </head>
+  <body>
+    {{> header}}
+
+    <main class="container">
+      <h1>{{title}}</h1>
+
+      {{#if inventory.length}}
+        <div class="inventory-grid">
+          {{#each inventory}}
+            <article class="vehicle-card">
+              <a href="/detail/{{inv_id}}">
+                <img src="{{inv_image_thumb}}" alt="{{inv_make}} {{inv_model}}" loading="lazy" />
+              </a>
+              <div class="vehicle-card-body">
+                <h2>
+                  <a href="/detail/{{inv_id}}">
+                    {{inv_make}} {{inv_model}}
+                  </a>
+                </h2>
+                <p>{{inv_year}} — {{inv_classification}}</p>
+                <p class="price">${{inv_price}}</p>
+              </div>
+            </article>
+          {{/each}}
+        </div>
+      {{else}}
+        <p>No vehicles found for this classification.</p>
+      {{/if}}
+
+      <p><a href="/inventory">&larr; Back to all inventory</a></p>
+    </main>
+
+    {{> footer}}
+  </body>
+</html>
