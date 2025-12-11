@@ -1,5 +1,6 @@
 // controllers/inventoryController.js
 const invModel = require("../models/inventory-model")
+const reviewModel = require("../models/review-model") // <-- import review model
 const utilities = require("../utilities")
 const { validationResult } = require("express-validator")
 
@@ -33,8 +34,13 @@ async function vehicleDetail(req, res, next) {
       })
     }
 
+    // ✅ Fetch reviews for this vehicle
+    const reviews = await reviewModel.getReviewsByInventoryId(invId)
+
     res.render("inventory/detail", {
       title: `${vehicle.inv_year} ${vehicle.inv_make} ${vehicle.inv_model}`,
+      vehicle,
+      reviews, // send reviews to view
       detailHTML: utilities.buildDetailHTML(vehicle)
     })
   } catch (err) {

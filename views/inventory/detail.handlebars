@@ -1,21 +1,23 @@
-{{!-- views/inventory/detail.handlebars --}}
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <title>{{title}}</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="/css/site.css">
-</head>
-<body>
-  {{> header}}
+<h1>{{title}}</h1>
 
-  <main class="container">
-    {{{detailHTML}}}
+<div>
+  {{{detailHTML}}} <!-- vehicle info -->
+</div>
 
-    <p><a href="/inv">&larr; Back to all inventory</a></p>
-  </main>
+<h2>Customer Reviews</h2>
 
-  {{> footer}}
-</body>
-</html>
+{{#if reviews.length}}
+  <ul>
+    {{#each reviews}}
+      <li>
+        <strong>{{review_title}}</strong> — Rating: {{review_rating}}/5  
+        <p>{{review_text}}</p>
+        <em>{{review_date}}</em>
+      </li>
+    {{/each}}
+  </ul>
+{{else}}
+  <p>No reviews yet.</p>
+{{/if}}
+
+<a class="add-review-btn" href="/review/add/{{vehicle.inv_id}}">Add a Review</a>

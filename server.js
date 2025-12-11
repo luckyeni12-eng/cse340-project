@@ -1,10 +1,16 @@
-require('dotenv').config();
-const express = require('express');
-const path = require('path');
-const fs = require('fs');
-const exphbs = require('express-handlebars');
-const indexRoutes = require('./routes/index');
-const inventoryRoutes = require('./routes/inventoryRoutes');
+import 'dotenv/config';
+import express from 'express';
+import path from 'path';
+import fs from 'fs';
+import { fileURLToPath } from 'url';
+import exphbs from 'express-handlebars';
+
+import indexRoutes from './routes/index.js';
+import inventoryRoutes from './routes/inventoryRoutes.js';
+import reviewRoute from './routes/reviewRoutes.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -26,31 +32,29 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Serve static files (images, CSS, JS, etc.)
+// Serve static files
 app.use(express.static(path.join(__dirname, 'public')));
 
 // ===========================
 // Routes
 // ===========================
 app.use('/', indexRoutes);
+app.use('/inventory', inventoryRoutes);
+app.use('/review', reviewRoute);
 
-// Inventory route that dynamically loads images
-app.get('/inventory', (req, res) => {
-    const imageFolder = path.join(__dirname, 'public/images/vehicles'); // Make sure folder name matches
+// Inventory route to dynamically load images
+app.get('/inventory-images', (req, res) => {
+    const imageFolder = path.join(__dirname, 'public/images/vehicles');
     let images = [];
-
     try {
         images = fs.readdirSync(imageFolder)
             .filter(file => /\.(jpg|jpeg|png|gif)$/i.test(file))
-            .map(file => '/images/vehicles/' + file); // URL matches folder name
+            .map(file => '/images/vehicles/' + file);
     } catch (err) {
         console.error('Error reading image folder:', err);
     }
-
     res.render('inventory', { images });
 });
-
-app.use('/', inventoryRoutes);
 
 // ===========================
 // 404 Handler
@@ -76,5 +80,3 @@ app.use((err, req, res, next) => {
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
 });
-
-

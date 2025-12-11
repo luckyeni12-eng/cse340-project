@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Assignment 3 - Inventory detail with images",
   "main": "server.js",
+  "type": "module",
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js"
