@@ -1,0 +1,27 @@
+{{! views/inventory/management.handlebars }}
+{{> header}}
+<main>
+  <h1>Inventory Management</h1>
+
+  {{#if message}}
+    <div class="message success">{{message}}</div>
+  {{/if}}
+
+  {{#if errors}}
+    <div class="message error">
+      <ul>
+        {{#each errors}}
+          <li>{{this}}</li>
+        {{/each}}
+      </ul>
+    </div>
+  {{/if}}
+
+  <nav>
+    <ul>
+      <li><a href="/inv/add-classification">Add Classification</a></li>
+      <li><a href="/inv/add-inventory">Add Inventory</a></li>
+    </ul>
+  </nav>
+</main>
+{{> footer}}

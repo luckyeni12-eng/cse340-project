@@ -2,21 +2,20 @@
 <!doctype html>
 <html lang="en">
 <head>
-    <meta charset="utf-8">
-    <title>{{title}}</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="sitesheet" href="/css/site.css">
+  <meta charset="utf-8">
+  <title>{{title}}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/css/site.css">
 </head>
 <body>
-    {{> header}}
+  {{> header}}
 
-    <main class="container">
-        {{!-- Insert dynamic vehicle detail HTML --}}
-        {{{detailHTML}}}
+  <main class="container">
+    {{{detailHTML}}}
 
-        <p><a href="/inventory">&larr; Back to all inventory</a></p>
-    </main>
+    <p><a href="/inv">&larr; Back to all inventory</a></p>
+  </main>
 
-    {{> footer}}
+  {{> footer}}
 </body>
 </html>
